@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: Laenukinnitamiseprotsess
+
+  docker:
+    compose:
+      enabled: false
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/coop
+    username: postgres
+    password: 1234
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+
+  flyway:
+    enabled: true
+
+server:
+  port: 8080
