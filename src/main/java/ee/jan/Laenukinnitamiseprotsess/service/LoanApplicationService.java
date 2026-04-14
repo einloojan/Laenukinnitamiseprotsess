@@ -1,7 +1,9 @@
 package ee.jan.Laenukinnitamiseprotsess.service;
 
+import ee.jan.Laenukinnitamiseprotsess.config.LoanProperties;
 import ee.jan.Laenukinnitamiseprotsess.domain.LoanApplication;
 import ee.jan.Laenukinnitamiseprotsess.domain.LoanApplicationStatus;
+import ee.jan.Laenukinnitamiseprotsess.domain.RejectionReason;
 import ee.jan.Laenukinnitamiseprotsess.dto.CreateLoanApplicationRequest;
 import ee.jan.Laenukinnitamiseprotsess.exception.ActiveLoanApplicationExistsException;
 import ee.jan.Laenukinnitamiseprotsess.repository.LoanApplicationRepository;
@@ -15,9 +17,17 @@ import java.util.List;
 public class LoanApplicationService {
 
     private final LoanApplicationRepository repository;
+    private final LoanProperties loanProperties;
+    private final PersonalCodeService personalCodeService;
 
-    public LoanApplicationService(LoanApplicationRepository repository) {
+    public LoanApplicationService(
+            LoanApplicationRepository repository,
+            LoanProperties loanProperties,
+            PersonalCodeService personalCodeService
+    ) {
         this.repository = repository;
+        this.loanProperties = loanProperties;
+        this.personalCodeService = personalCodeService;
     }
 
     public LoanApplication createApplication(CreateLoanApplicationRequest request) {
@@ -38,9 +48,17 @@ public class LoanApplicationService {
         entity.setInterestMargin(request.getInterestMargin());
         entity.setBaseInterestRate(request.getBaseInterestRate());
         entity.setLoanAmount(request.getLoanAmount());
-
-        entity.setStatus(LoanApplicationStatus.SUBMITTED);
         entity.setCreatedAt(LocalDateTime.now());
+
+        int age = personalCodeService.calculateAge(request.getPersonalCode());
+
+        if (age > loanProperties.getMaxCustomerAge()) {
+            entity.setStatus(LoanApplicationStatus.REJECTED);
+            entity.setRejectionReason(RejectionReason.CUSTOMER_TOO_OLD);
+        } else {
+            entity.setStatus(LoanApplicationStatus.SUBMITTED);
+            entity.setRejectionReason(null);
+        }
 
         return repository.save(entity);
     }
