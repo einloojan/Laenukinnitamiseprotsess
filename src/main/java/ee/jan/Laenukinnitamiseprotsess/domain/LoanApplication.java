@@ -1,11 +1,15 @@
 package ee.jan.Laenukinnitamiseprotsess.domain;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "loan_application")
 
@@ -42,6 +46,10 @@ public class LoanApplication {
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "rejection_reason")
+    private RejectionReason rejectionReason;
 
     public Long getId() {
         return id;
