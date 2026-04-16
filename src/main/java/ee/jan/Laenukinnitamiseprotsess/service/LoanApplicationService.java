@@ -41,6 +41,8 @@ public class LoanApplicationService {
     }
 
     public LoanApplication createApplication(CreateLoanApplicationRequest request) {
+        personalCodeService.validate(request.getPersonalCode());
+
         boolean hasActive = repository.existsByPersonalCodeAndStatusIn(
                 request.getPersonalCode(),
                 List.of(LoanApplicationStatus.SUBMITTED, LoanApplicationStatus.IN_REVIEW)
