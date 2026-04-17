@@ -1,5 +1,6 @@
 package ee.jan.Laenukinnitamiseprotsess.service;
 
+import ee.jan.Laenukinnitamiseprotsess.exception.InvalidPersonalCodeException;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -22,7 +23,7 @@ public class PersonalCodeService {
             case 3, 4 -> century = 1900;
             case 5, 6 -> century = 2000;
             case 7, 8 -> century = 2100;
-            default -> throw new IllegalArgumentException("Invalid personal code");
+            default -> throw new InvalidPersonalCodeException("Invalid personal code");
         }
 
         return LocalDate.of(century + yearPart, month, day);
@@ -35,16 +36,16 @@ public class PersonalCodeService {
 
     public void validate(String personalCode) {
         if (personalCode == null || personalCode.length() != 11) {
-            throw new IllegalArgumentException("Invalid personal code");
+            throw new InvalidPersonalCodeException("Invalid personal code");
         }
 
         if (!personalCode.matches("\\d{11}")) {
-            throw new IllegalArgumentException("Invalid personal code");
+            throw new InvalidPersonalCodeException("Invalid personal code");
         }
 
         int firstDigit = Character.getNumericValue(personalCode.charAt(0));
         if (firstDigit < 1 || firstDigit > 8) {
-            throw new IllegalArgumentException("Invalid personal code");
+            throw new InvalidPersonalCodeException("Invalid personal code");
         }
 
         try {
@@ -58,16 +59,16 @@ public class PersonalCodeService {
                 case 3, 4 -> century = 1900;
                 case 5, 6 -> century = 2000;
                 case 7, 8 -> century = 2100;
-                default -> throw new IllegalArgumentException("Invalid personal code");
+                default -> throw new InvalidPersonalCodeException("Invalid personal code");
             }
 
             LocalDate.of(century + yearPart, month, day);
         } catch (Exception e) {
-            throw new IllegalArgumentException("Invalid personal code");
+            throw new InvalidPersonalCodeException("Invalid personal code");
         }
 
         if (!isChecksumValid(personalCode)) {
-            throw new IllegalArgumentException("Invalid personal code");
+            throw new InvalidPersonalCodeException("Invalid personal code");
         }
     }
 
