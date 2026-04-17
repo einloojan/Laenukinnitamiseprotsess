@@ -19,6 +19,8 @@ mvnw.cmd clean package
 On macOS/Linux:
 
 ./mvnw clean package
+
+
 2. Start the full system
 docker compose up --build
 
